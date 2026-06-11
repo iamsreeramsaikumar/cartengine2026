@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '20'
 
-      - run: npm cli
+      - run: npm ci
 
       - run: npm run lint
 
