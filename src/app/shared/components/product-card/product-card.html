@@ -1,0 +1,16 @@
+<div class="card cursor-pointer" (click)="navigateToProductDetails(product().id)">
+    <div class="d-flex justify-content-end">
+        <span class="ce-icon" (click)="favouriteClicked.emit(product().id); $event.stopPropagation();">{{
+            product().isFavourite? '❤️'
+            :'🤍'}}</span>
+    </div>
+    <img [src]="this.product().url" class="card-img-top p-3" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">{{this.product().name}}</h5>
+        <p class="card-text">{{this.product().description}}</p>
+        <div class="d-flex justify-content-between">
+            <a class="btn btn-dark w-100" (click)="addToCartClicked.emit(product().id); $event.stopPropagation();">Add
+                to cart</a>
+        </div>
+    </div>
+</div>

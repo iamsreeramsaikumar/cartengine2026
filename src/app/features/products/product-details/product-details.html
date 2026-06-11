@@ -1,0 +1,86 @@
+<div class="container py-5">
+    @if(product(); as product) {
+    <div class="card border-0 shadow-lg">
+        <div class="row g-0">
+
+            <!-- Product Image -->
+            <div class="col-md-5">
+                <img [src]="product.url" [alt]="product.name"
+                    class="img-fluid rounded-start h-100 w-100 object-fit-cover">
+            </div>
+
+            <!-- Product Details -->
+            <div class="col-md-7">
+                <div class="card-body p-4">
+
+                    <!-- Category -->
+                    <span class="badge bg-secondary fs-6 mb-3">
+                        {{ product.category }}
+                    </span>
+
+                    <!-- Product Name -->
+                    <h1 class="display-6 fw-bold">
+                        {{ product.name }}
+                    </h1>
+
+                    <!-- Price -->
+                    <h2 class="text-success my-3">
+                        ₹{{ product.price }}
+                    </h2>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <h5>Description</h5>
+                        <p class="text-muted">
+                            {{ product.description }}
+                        </p>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="mb-4">
+                        <h5>Features</h5>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            @for(feature of product.features.split(','); track feature) {
+                            <span class="badge bg-primary-subtle text-primary border">
+                                {{ feature.trim() }}
+                            </span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Keywords -->
+                    <div class="mb-4">
+                        <h5>Keywords</h5>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            @for(keyword of product.keywords.split(','); track keyword) {
+                            <span class="badge rounded-pill bg-light text-dark border">
+                                #{{ keyword.trim() }}
+                            </span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex gap-3 mt-4">
+
+                        <button class="btn btn-primary btn-lg" (click)="addToCart(product.id)">
+                            🛒 Add to Cart
+                        </button>
+
+                        <button class="btn btn-lg" [ngClass]="product.isFavourite? 'btn-danger':'btn-outline-danger'"
+                            (click)="toggleFavourite(product.id)">
+                            ❤️ Favourite
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    }
+
+</div>

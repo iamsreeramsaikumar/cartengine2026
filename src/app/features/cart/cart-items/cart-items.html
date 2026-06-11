@@ -1,0 +1,98 @@
+<div class="container py-4">
+    <h2 class="mb-4">🛒 Shopping Cart</h2>
+
+    @if(cartItems().length > 0) {
+    @for(item of cartItems(); track item.product.id) {
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            <div class="row align-items-center">
+
+                <!-- Product Image -->
+                <div class="col-md-2 text-center">
+                    <img [src]="item.product.url" [alt]="item.product.name" class="img-fluid rounded"
+                        style="max-height: 100px;" />
+                </div>
+
+                <!-- Product Details -->
+                <div class="col-md-4">
+                    <h5 class="mb-1">{{ item.product.name }}</h5>
+                    <p class="text-muted mb-0">
+                        ₹{{ item.product.price }}
+                    </p>
+                </div>
+
+                <!-- Quantity Controls -->
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+
+                        <button class="btn btn-outline-danger btn-sm" (click)="decreaseQuantity(item.product.id)
+                            ">
+                            −
+                        </button>
+
+                        <span class="fw-bold fs-5">
+                            {{ item.quantity }}
+                        </span>
+
+                        <button class="btn btn-outline-success btn-sm" (click)="increaseQuantity(item.product.id)">
+                            +
+                        </button>
+
+                    </div>
+                </div>
+
+                <!-- Total Price -->
+                <div class="col-md-2 text-center">
+                    <h5 class="text-success mb-0">
+                        ₹{{ item.product.price * item.quantity }}
+                    </h5>
+                </div>
+
+                <!-- Delete -->
+                <div class="col-md-1 text-center">
+                    <button class="btn btn-link text-danger fs-4 p-0" (click)="removeFromCart(item.product.id)">
+                        🗑️
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Cart Summary -->
+    <div class="card mt-4 border-primary">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Total</h4>
+                <h3 class="text-primary mb-0">
+                    ₹{{ cartTotal() }}
+                </h3>
+            </div>
+        </div>
+    </div>
+    } @else {
+    <!-- Empty State -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body text-center py-5">
+
+            <div class="display-3 mb-3">
+                🛒
+            </div>
+
+            <h3 class="mb-2">
+                Your Cart Is Empty
+            </h3>
+
+            <p class="text-muted mb-4">
+                Products you add to your cart will appear here.
+            </p>
+
+            <button class="btn btn-primary" routerLink="/dashboard">
+                Browse Products
+            </button>
+
+        </div>
+    </div>
+    }
+</div>
