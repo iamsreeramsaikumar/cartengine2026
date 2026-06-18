@@ -18,10 +18,17 @@ export class ProductDetails {
 
   params = toSignal(this.route.params);
 
-  product = computed(() => {
+  // product = computed(() => {
+  // const productId = this.params()?.['id'];
+  // return this.productService.products().find(p => p.id === productId);
+  // });
+
+  product = this.productService.product;
+
+  ngOnInit() {
     const productId = this.params()?.['id'];
-    return this.productService.products().find(p => p.id === productId);
-  });
+    this.productService.getProductById(productId);
+  }
 
   addToCart(productId: string) {
     this.cartService.addToCart(productId);

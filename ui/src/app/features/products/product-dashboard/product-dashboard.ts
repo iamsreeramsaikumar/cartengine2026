@@ -13,9 +13,14 @@ export class ProductDashboard {
 
   private productService = inject(ProductService);
   private cartService = inject(CartService);
+  isLoading = this.productService.isLoading;
   products = this.productService.products;
   selectedCategory = signal<string | null>(null); //filterchips
   searchTerm = signal('');
+
+  ngOnInit() {
+    this.productService.loadProducts();
+  }
 
   onInput(evt: any) {
     const value = evt?.target.value;

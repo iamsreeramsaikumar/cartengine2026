@@ -2,6 +2,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, } from '@angular/router';
 import { SignupForm } from '../../../models/signup.model';
 import { email, form, required, FormField, validate } from '@angular/forms/signals';
+import { AuthService } from '../../../services/auth.service';
+import { ToasterService } from '../../../services/toasterService';
 
 @Component({
   selector: 'app-signup',
@@ -11,6 +13,8 @@ import { email, form, required, FormField, validate } from '@angular/forms/signa
 })
 export class SignupPage {
   router = inject(Router);
+  authService = inject(AuthService);
+  toasterService = inject(ToasterService);
   singupModel = signal<SignupForm>({
     email: '',
     name: '',
@@ -43,9 +47,16 @@ export class SignupPage {
       return;
     }
 
-    console.log('Signup form submitted', this.singupModel());
+    this.authService.signup(this.singupModel()).subscribe({
+      next: (res: any) => {
+        this.toasterService.show(res.message, 'success');
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        this.toasterService.show(error.error.message, 'danger');
+      }
+    });
 
-    this.router.navigate(['/login']);
   }
 
 }
