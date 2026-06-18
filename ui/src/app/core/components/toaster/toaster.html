@@ -1,0 +1,18 @@
+@if (toast().visible) {
+<div class="toast show position-fixed top-0 end-0 border-0" style="z-index: 9999" [ngClass]="{
+       'text-bg-success': toast().type === 'success',
+       'text-bg-warning': toast().type === 'warning',
+       'text-bg-danger': toast().type === 'danger',
+       'text-bg-info': toast().type === 'info'
+     }">
+
+    <div class="d-flex">
+        <div class="toast-body">
+            {{ toast().message }}
+        </div>
+
+        <button class="btn-close me-2 m-auto" (click)="close()"></button>
+    </div>
+
+</div>
+}

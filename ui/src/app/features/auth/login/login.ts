@@ -2,6 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { LoginForm } from '../../../models/login.model';
 import { email, form, required, FormField } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { ToasterService } from '../../../services/toasterService';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +14,8 @@ import { Router, RouterLink } from '@angular/router';
 export class LoginPage {
 
   router = inject(Router);
+  authService = inject(AuthService);
+  toasterService = inject(ToasterService)
   loginModel = signal<LoginForm>({
     email: '',
     password: ''
@@ -29,7 +33,16 @@ export class LoginPage {
       return;
     }
 
-    this.router.navigate(['/dashboard']);
+    this.authService.login(this.loginModel()).subscribe({
+      next: (res: any) => {
+        this.toasterService.show(res.message, 'success');
+        this.router.navigate(['/dashboard']);
+      },
+      error: (error: any) => {
+        this.toasterService.show(error.error.message, 'danger');
+      }
+    })
+
 
     console.log('Login form submitted', this.loginModel());
   }
