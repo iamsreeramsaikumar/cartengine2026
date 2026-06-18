@@ -1,0 +1,125 @@
+require('dotenv').config({
+    path: '../.env'
+});
+const express = require('express');
+const cors = require('cors');
+const products = require('../data/products');
+const connectDB = require('./db');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const app = express();
+
+connectDB();
+
+app.use(express.json());
+
+app.use(cors());
+console.log(process.env.JWT_SECRET);
+
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email' })
+        }
+
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordMatch) {
+            return res.status(401).json({
+                message: 'Invalid Password'
+            })
+        }
+
+        const token = jwt.sign(
+            {
+                id: user._id,
+                email: user.email,
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: '1h'
+            }
+        );
+
+        res.status(200).json({
+            message: 'Login successful',
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+
+
+});
+
+app.get('/users', async (req, res) => {
+    const users = await User.find();
+    res.json(users)
+})
+
+app.post('/signup', async (req, res) => {
+    const { name, email, password } = req.body;
+
+    try {
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return res.status(400).json({
+                message: "User already exists"
+            })
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = new User({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        await user.save();
+        console.log("Saved user:", user);
+
+        res.status(201).json({
+            message: 'User created successfully'
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
+});
+
+app.get('/products', (req, res) => {
+    res.json(products);
+});
+
+app.get('/products/:id', (req, res) => {
+    const { id } = req.params;
+    const product = products.find(product => product.id === id);
+
+    if (!product)
+        return res.status(404).json({
+            message: 'Product not found'
+        });
+
+    res.json(product)
+})
+
+app.listen(3000, () => {
+    console.log("server is running on port 3000")
+});
+
