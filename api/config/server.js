@@ -9,6 +9,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const app = express();
+const authMiddleware = require('../middleware/auth.middleware')
 
 connectDB();
 
@@ -64,9 +65,20 @@ app.post('/login', async (req, res) => {
 
 });
 
-app.get('/users', async (req, res) => {
+app.get('/users', authMiddleware, async (req, res) => {
     const users = await User.find();
     res.json(users)
+});
+
+app.get('/profile', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
 })
 
 app.post('/signup', async (req, res) => {
