@@ -1,6 +1,9 @@
+const path = require('path');
+
 require('dotenv').config({
-    path: '../.env'
+    path: path.join(__dirname, '..', '.env')
 });
+
 const express = require('express');
 const cors = require('cors');
 const products = require('../data/products');
