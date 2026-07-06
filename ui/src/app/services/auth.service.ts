@@ -14,4 +14,16 @@ export class AuthService {
         return this.http.post('http://localhost:3000/login', credentials);
     }
 
+    getToken() {
+        return localStorage.getItem('token');
+    }
+
+    isLoggedIn() {
+        return !!this.getToken();
+    }
+
+    logout() {
+        localStorage.removeItem('token');
+    }
+
 }
