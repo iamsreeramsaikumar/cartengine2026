@@ -132,6 +132,125 @@ app.get('/products/:id', (req, res) => {
         });
 
     res.json(product)
+});
+
+app.post('/cart', authMiddleware, async (req, res) => {
+    const { productId } = req.body;
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return res.status(404).json({
+            message: 'User not found'
+        });
+    }
+
+    const existingProduct = user.cart.find(item => item.productId === productId);
+
+    console.log("Existing Product in Cart:", existingProduct);
+
+    if (existingProduct) {
+        existingProduct.quantity += 1;
+    } else {
+        user.cart.push({
+            productId,
+            quantity: 1
+        });
+    }
+
+    await user.save();
+
+    res.status(200).json({
+        message: 'Product added to cart',
+    })
+
+});
+
+app.get('/cart', authMiddleware, async (req, res) => {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        return res.status(404).json({
+            message: 'User not found'
+        });
+    }
+
+    const cartItems = user.cart.map(item => {
+
+        const product = products.find(p => p.id === item.productId);
+
+        return {
+            ...product,
+            quantity: item.quantity
+        }
+
+    })
+
+    res.status(200).json(cartItems)
+
+});
+
+app.patch('/cart', authMiddleware, async (req, res) => {
+    const { productId, quantity } = req.body;
+
+    if (quantity < 1) {
+        return res.status(400).json({
+            message: 'Quantity must be at least 1'
+        })
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        return res.status(404).json({
+            message: 'User not found'
+        })
+    }
+
+    const cartItem = user.cart.find(item => item.productId === productId);
+
+    if (!cartItem) {
+        return res.status(404).json({
+            message: 'Product not found in cart'
+        })
+    }
+
+    cartItem.quantity = quantity;
+
+    await user.save();
+
+    res.status(200).json({
+        message: 'Cart updated successfully'
+    })
+});
+
+app.delete('/cart/:productId', authMiddleware, async (req, res) => {
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        return res.status(404).json({
+            message: 'User not found'
+        })
+    }
+
+    const { productId } = req.params;
+
+    const cartItem = user.cart.find(item => item.productId === productId);
+
+    if (!cartItem) {
+        return res.status(404).json({
+            message: 'Product not found'
+        })
+    }
+
+    user.cart = user.cart.filter(item => item.productId !== productId);
+
+    await user.save();
+
+    res.status(200).json({
+        message: 'Product removed from cart'
+    })
 })
 
 app.listen(3000, () => {
