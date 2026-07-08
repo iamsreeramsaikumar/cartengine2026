@@ -28,6 +28,8 @@ export class ProductDetails {
   ngOnInit() {
     const productId = this.params()?.['id'];
     this.productService.getProductById(productId);
+    this.productService.ensureWishlistLoaded();
+    this.cartService.ensureCartItemsLoaded();
   }
 
   addToCart(productId: string) {
@@ -35,6 +37,10 @@ export class ProductDetails {
   }
 
   toggleFavourite(id: string) {
-    this.productService.toggleFavourite(id);
+    this.productService.toggleWishlist(id);
+  }
+
+  isFavourite(productId: string) {
+    return this.productService.isFavourite(productId);
   }
 }

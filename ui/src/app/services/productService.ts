@@ -7,6 +7,7 @@ import { Product } from '../models/product.model';
 export class ProductService {
     private http = inject(HttpClient);
     products = signal<Product[]>([]);
+    wishlistItems = signal<Product[]>([]);
     product = signal<Product | null>(null);
     isLoading = signal(false);
 
@@ -18,6 +19,20 @@ export class ProductService {
         })
     }
 
+    loadWishlist() {
+        this.isLoading.set(true);
+        this.http.get<Product[]>('http://localhost:3000/wishlist').subscribe(products => {
+            this.wishlistItems.set(products);
+            this.isLoading.set(false);
+        })
+    }
+
+    ensureWishlistLoaded() {
+        if (this.wishlistItems().length === 0) {
+            this.loadWishlist();
+        }
+    }
+
     getProductById(id: string) {
         this.isLoading.set(true);
         this.http.get<Product>(`http://localhost:3000/products/${id}`).subscribe(prod => {
@@ -27,24 +42,33 @@ export class ProductService {
     }
 
     favouriteCount = computed(() => {
-        return this.products().reduce((total, product) => total + (product.isFavourite ? 1 : 0), 0);
+        return this.wishlistItems().length;
     });
 
-    toggleFavourite(id: string) {
-        this.products.update((products) =>
-            products.map(product =>
-                product.id === id ? { ...product, isFavourite: !product.isFavourite } : product
-            )
-        );
+    toggleWishlist(id: string) {
+
+        this.http.post('http://localhost:3000/wishlist', { productId: id }).subscribe({
+            next: () => {
+                this.loadWishlist();
+            },
+            error: (err) => {
+                console.error('Error toggling favourite:', err);
+            }
+        });
     }
 
-    favouriteProducts = computed(() =>
-        this.products().filter((product) => product.isFavourite)
-    );
+    removeWishlist(id: string) {
+        this.http.delete(`http://localhost:3000/wishlist/${id}`).subscribe({
+            next: () => {
+                this.loadWishlist();
+            },
+            error: (err) => {
+                console.error('Error removing from favourites:', err);
+            }
+        });
+    }
 
-    removeFromFavourites(id: string) {
-        this.products.update((products) =>
-            products.map((prod) => prod.id === id ? { ...prod, isFavourite: false } : prod)
-        )
+    isFavourite(productId: string) {
+        return this.wishlistItems().some(item => item.id === productId);
     }
 }

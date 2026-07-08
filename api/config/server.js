@@ -303,13 +303,9 @@ app.get('/wishlist', authMiddleware, async (req, res) => {
         })
     }
 
-    const wishlistItems = user.wishlist.map(item => {
-        const product = products.filter(p => p.id === item.productId);
-
-        return {
-            product
-        }
-    });
+    const wishlistItems = user.wishlist.map(item =>
+        products.find(product => product.id === item.productId)
+    ).filter(Boolean)
 
     res.status(200).json(wishlistItems)
 

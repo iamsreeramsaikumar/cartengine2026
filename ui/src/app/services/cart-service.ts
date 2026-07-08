@@ -12,8 +12,7 @@ export class CartService {
     private productService = inject(ProductService);
 
     cartCount = computed(() =>
-        this.cartItems()
-            .reduce((total, item) => total + item.quantity, 0)
+        this.cartItems().length
     );
 
     cartTotal = computed(() =>
@@ -34,6 +33,12 @@ export class CartService {
         this.getCart().subscribe((res: any) => {
             this.cartItems.set(res);
         });
+    }
+
+    ensureCartItemsLoaded() {
+        if (this.cartItems().length === 0) {
+            this.loadCart();
+        }
     }
 
     addToCart(productId: string) {

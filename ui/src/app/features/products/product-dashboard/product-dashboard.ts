@@ -20,6 +20,8 @@ export class ProductDashboard {
 
   ngOnInit() {
     this.productService.loadProducts();
+    this.productService.ensureWishlistLoaded();
+    this.cartService.ensureCartItemsLoaded();
   }
 
   onInput(evt: any) {
@@ -50,7 +52,7 @@ export class ProductDashboard {
   }
 
   toggleFavourite(id: string) {
-    this.productService.toggleFavourite(id);
+    this.productService.toggleWishlist(id);
   }
 
   addToCart(productId: string) {

@@ -17,7 +17,7 @@ export class CartItems {
   cartTotal = this.cartService.cartTotal;
 
   ngOnInit() {
-    this.cartService.loadCart();
+    this.cartService.ensureCartItemsLoaded();
   }
 
 
