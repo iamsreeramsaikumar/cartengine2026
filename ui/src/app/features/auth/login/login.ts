@@ -35,6 +35,7 @@ export class LoginPage {
 
     this.authService.login(this.loginModel()).subscribe({
       next: (res: any) => {
+        localStorage.setItem('token', res.token);
         this.toasterService.show(res.message, 'success');
         this.router.navigate(['/dashboard']);
       },
