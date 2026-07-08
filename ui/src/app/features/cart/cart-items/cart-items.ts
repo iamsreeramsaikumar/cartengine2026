@@ -16,12 +16,17 @@ export class CartItems {
 
   cartTotal = this.cartService.cartTotal;
 
-  increaseQuantity(productId: string) {
-    this.cartService.increaseQuantity(productId);
+  ngOnInit() {
+    this.cartService.loadCart();
   }
 
-  decreaseQuantity(productId: string) {
-    this.cartService.decreaseQuantity(productId);
+
+  increaseQuantity(productId: string, quantity: number) {
+    this.cartService.increaseQuantity(productId, quantity + 1);
+  }
+
+  decreaseQuantity(productId: string, quantity: number) {
+    this.cartService.decreaseQuantity(productId, quantity - 1);
   }
 
   removeFromCart(productId: string) {

@@ -2,10 +2,12 @@ import { computed, inject, Service, signal } from '@angular/core';
 import { CartItem } from '../models/product.model';
 import { PRODUCTS } from '../features/products/mock-products';
 import { ProductService } from './productService';
+import { HttpClient } from '@angular/common/http';
 
 @Service()
 export class CartService {
 
+    private http = inject(HttpClient);
     cartItems = signal<CartItem[]>([]);
     private productService = inject(ProductService);
 
@@ -23,49 +25,46 @@ export class CartService {
             )
     );
 
+    getCart() {
+        return this.http.get('http://localhost:3000/cart');
+    }
+
+
+    loadCart() {
+        this.getCart().subscribe((res: any) => {
+            this.cartItems.set(res);
+        });
+    }
+
     addToCart(productId: string) {
-
-        const product = this.productService.products().find(item => item.id === productId);
-        if (!product) return;
-
-        this.cartItems.update(items => {
-
-            const existingItem = items.find(items => items.product.id === productId);
-
-            if (existingItem) {
-                return items.map(item =>
-                    item.product.id === productId ? { ...item, quantity: item.quantity + 1 } : item
-                )
+        this.http.post('http://localhost:3000/cart', { productId: productId }).subscribe({
+            next: () => {
+                this.loadCart();
             }
-
-            return [...items, { product, quantity: 1 }]
-        }
-        );
+        });
     }
 
-    increaseQuantity(productId: string) {
-        this.cartItems.update(items =>
-            items.map(item =>
-                item.product.id === productId ? { ...item, quantity: item.quantity + 1 } : item
-            )
-        )
+    increaseQuantity(productId: string, quantity: number) {
+        this.http.patch('http://localhost:3000/cart', { productId: productId, quantity: quantity }).subscribe({
+            next: () => {
+                this.loadCart();
+            }
+        })
     }
 
-    decreaseQuantity(productId: string) {
-        this.cartItems.update(items => {
-            const updatedItems = items.map(item =>
-                item.product.id === productId ? { ...item, quantity: item.quantity - 1 } : item
-            );
-
-            return updatedItems.filter(item =>
-                item.quantity > 0
-            )
+    decreaseQuantity(productId: string, quantity: number) {
+        this.http.patch('http://localhost:3000/cart', { productId: productId, quantity: quantity }).subscribe({
+            next: () => {
+                this.loadCart();
+            }
         })
     }
 
     removeFromCart(productId: string) {
-        this.cartItems.update(items =>
-            items.filter(item => item.product.id !== productId)
-        );
+        this.http.delete(`http://localhost:3000/cart/${productId}`).subscribe({
+            next: () => {
+                this.loadCart();
+            }
+        })
     }
 }

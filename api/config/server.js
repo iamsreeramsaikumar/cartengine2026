@@ -180,7 +180,7 @@ app.get('/cart', authMiddleware, async (req, res) => {
         const product = products.find(p => p.id === item.productId);
 
         return {
-            ...product,
+            product,
             quantity: item.quantity
         }
 
