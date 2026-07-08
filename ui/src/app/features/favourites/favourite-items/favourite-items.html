@@ -5,13 +5,13 @@
         <h2 class="mb-0">❤️ My Favourite Products</h2>
 
         <span class="badge rounded-pill text-bg-danger fs-6 px-3 py-2">
-            {{ favouriteProducts().length }}
+            {{ wishlistItems().length }}
         </span>
     </div>
 
-    @if(favouriteProducts().length > 0) {
+    @if(wishlistItems().length > 0) {
 
-    @for(product of favouriteProducts(); track product.id) {
+    @for(product of wishlistItems(); track product.id) {
 
     <div class="card shadow-sm border-0 mb-3">
         <div class="card-body">

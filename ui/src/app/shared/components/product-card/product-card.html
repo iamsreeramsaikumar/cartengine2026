@@ -1,7 +1,7 @@
 <div class="card cursor-pointer" (click)="navigateToProductDetails(product().id)">
     <div class="d-flex justify-content-end">
         <span class="ce-icon" (click)="favouriteClicked.emit(product().id); $event.stopPropagation();">{{
-            product().isFavourite? '❤️'
+            isFavourite(product().id)? '❤️'
             :'🤍'}}</span>
     </div>
     <img [src]="this.product().url" class="card-img-top p-3" alt="...">
