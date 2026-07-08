@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema(
                     default: 1
                 }
             }
+        ],
+        wishlist: [
+            {
+                productId: {
+                    type: String,
+                    required: true
+                }
+            }
         ]
     },
     {
